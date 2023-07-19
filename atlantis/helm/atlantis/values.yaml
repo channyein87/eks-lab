@@ -1,0 +1,22 @@
+atlantis:
+  ingress:
+    ingressClassName: alb
+    host: atlantis.example.com
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/subnets: subnet-xxx, subnet-xxx
+
+  serviceAccount:
+    name: atlantis-sa
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::54643564536:role/atlantis-role
+
+  orgAllowlist: gitlab.com/channyein87/*
+
+  gitlab:
+    user: channyein87
+    token: glpat-xxx
+    secret: glpat-xxx
+
+  nodeSelector:
+    nodeGroup: ng1

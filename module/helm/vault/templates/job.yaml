@@ -1,0 +1,60 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-bootstrap"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-bootstrap"
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      restartPolicy: Never
+      serviceAccountName: "vault-sa"
+      containers:
+      - name: "{{ .Release.Name }}-bootstrap"
+        image: "amazonlinux"
+        command: ["/bin/bash","-c"]
+        args:
+        - |
+          set -xeo pipefail
+
+          yum install -y jq 2>&1 >/dev/null
+
+          echo "Sleeping for ${SLEEP_SECONDS} seconds"
+          sleep 15
+
+          curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.25.5/2023-01-11/bin/linux/amd64/kubectl
+          chmod +x ./kubectl
+          mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+          kubectl version --short --client
+
+          until curl -k -fs -o /dev/null http://vault-0.vault-internal:8200/v1/sys/init; do
+              echo "Waiting for Vault to start..."
+              sleep 1
+          done
+
+          init=$(curl -fs -k http://vault-0.vault-internal:8200/v1/sys/init | jq -r .initialised)
+          echo "Is vault initialized: '${init}'"
+
+          if [ "$init" != "false" ]; then
+              echo "Initializing Vault"
+              kubectl exec vault-0 -- "/bin/sh" "-c" "export VAULT_SKIP_VERIFY=true && vault operator init -recovery-shares=1 -recovery-threshold=1" > /tmp/secret_value.txt
+          else
+              echo "Vault is already initialized"
+          fi
+
+          kubectl create secret generic vault-init --from-file=vault.init=/tmp/secret_value.txt
+          kubectl exec -t vault-1 -- "/bin/sh" "-c" "vault operator raft join http://vault-0.vault-internal:8200"

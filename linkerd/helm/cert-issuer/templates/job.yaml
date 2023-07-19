@@ -1,0 +1,64 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-pki"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-5"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-pki"
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      restartPolicy: Never
+      serviceAccountName: "vault-sa"
+      containers:
+      - name: "{{ .Release.Name }}-pki"
+        image: "amazonlinux"
+        command: ["/bin/bash","-c"]
+        args:
+        - |
+          set -xeo pipefail
+
+          yum install -y jq yum-utils shadow-utils 2>&1 >/dev/null
+          yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+          yum -y install vault
+          yum -y reinstall vault
+          vault version
+
+          curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.25.5/2023-01-11/bin/linux/amd64/kubectl
+          chmod +x ./kubectl
+          mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+          kubectl version --short --client
+
+          export VAULT_TOKEN=$(kubectl get secrets vault-init -o go-template={{ "'{{ index .data \"vault.init\"|base64decode }}'" }} | grep Token | awk '{print $4}')
+          export VAULT_ADDR="http://vault.vault:8200"
+          vault token lookup
+
+          vault secrets enable pki
+          vault secrets tune -max-lease-ttl=8760h pki
+          vault write pki/root/generate/internal common_name=lab-cluster ttl=8760h
+          vault write pki/config/urls issuing_certificates="${VAULT_ADDR}/v1/pki/ca" crl_distribution_points="${VAULT_ADDR}/v1/pki/crl"
+
+          vault secrets enable -path=pki_int pki
+          vault secrets tune -max-lease-ttl=43800h pki_int
+          vault write pki_int/config/urls issuing_certificates="${VAULT_ADDR}/v1/pki_int/ca" crl_distribution_points="${VAULT_ADDR}/v1/pki_int/crl"
+          vault write -format=json pki_int/intermediate/generate/internal common_name=root.linkerd.cluster.local ttl=8760h key_type=ec | jq -r '.data.csr' > /tmp/pki_int.csr
+          vault write -format=json pki/root/sign-intermediate csr=@/tmp/pki_int.csr format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > /tmp/int.cert.pem
+          vault write pki_int/intermediate/set-signed certificate=@/tmp/int.cert.pem
+          echo 'path "pki*" {  capabilities = ["create", "read", "update", "delete", "list", "sudo"]}' | vault policy write linkerd -
+
+          vault auth enable kubernetes
+          vault write auth/kubernetes/config kubernetes_host="https://kubernetes.default.svc"
+          vault write auth/kubernetes/role/vault-issuer bound_service_account_names=vault-issuer bound_service_account_namespaces=cert-manager policies=linkerd ttl=20m

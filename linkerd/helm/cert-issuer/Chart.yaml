@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: 1.0.0
+name: cert-issuer
+version: 1.0.0
+description: Certificate ClusterIssuer with Vault and cert-manager

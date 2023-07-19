@@ -1,0 +1,43 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-bootstrap"
+  name: "{{ .Release.Name }}-bootstrap"
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  - pods
+  - pods/log
+  - secrets
+  - tmp/secrets
+  - serviceaccounts
+  - serviceaccounts/token
+  verbs:
+  - get
+  - list
+  - create
+- apiGroups:
+  - "certificates.k8s.io"
+  resources:
+  - "certificatesigningrequests"
+  - "certificatesigningrequests/approval"
+  - "certificatesigningrequests/status"
+  verbs:
+  - update
+  - get
+  - list
+  - create
+  - watch
+- apiGroups:
+  - "certificates.k8s.io"
+  resources:
+  - "signers"
+  verbs:
+  - approve
+  - sign
+  resourceNames:
+  - "beta.eks.amazonaws.com/app-serving"

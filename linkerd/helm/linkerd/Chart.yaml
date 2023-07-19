@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: 2.13.0
+name: linkerd
+version: 1.0.5
+description: Umbrella chart to deploy the linkerd and supporting objects
+
+dependencies:
+  - name: linkerd-crds
+    version: 1.6.1
+    repository: https://helm.linkerd.io/stable
+  - name: linkerd-control-plane
+    version: 1.12.5
+    repository: https://helm.linkerd.io/stable

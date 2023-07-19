@@ -1,0 +1,9 @@
+dependencies:
+- name: linkerd-viz
+  repository: https://helm.linkerd.io/stable
+  version: 30.8.5
+- name: oauth2-proxy
+  repository: https://oauth2-proxy.github.io/manifests
+  version: 6.15.2
+digest: sha256:9c2c56f464a2dfd56d25c89253514b8147af9e5b988a3ae192e4b862bcfbdf5f
+generated: "2023-07-15T07:14:11.2462392Z"

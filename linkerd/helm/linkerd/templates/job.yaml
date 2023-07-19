@@ -1,0 +1,42 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-secret-copy"
+  namespace: vault
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-5"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-secret-copy"
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      restartPolicy: Never
+      serviceAccountName: "vault-sa"
+      containers:
+      - name: "{{ .Release.Name }}-secret-copy"
+        image: "amazonlinux"
+        command: ["/bin/bash","-c"]
+        args:
+        - |
+          set -xeo pipefail
+
+          yum install -y jq yum-utils shadow-utils 2>&1 >/dev/null
+
+          curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.25.5/2023-01-11/bin/linux/amd64/kubectl
+          chmod +x ./kubectl
+          mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+          kubectl version --short --client
+
+          kubectl get secret linkerd-identity-issuer --namespace=cert-manager -o yaml | grep -v '^\s*namespace:\s' | kubectl apply --namespace=linkerd -f -

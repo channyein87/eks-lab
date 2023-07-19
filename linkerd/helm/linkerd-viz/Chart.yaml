@@ -1,0 +1,10 @@
+apiVersion: v2
+appVersion: 2.13.0
+name: linkerd-viz
+version: 1.0.0
+description: Umbrella chart to deploy the linkerd-viz and supporting objects
+
+dependencies:
+  - name: linkerd-viz
+    version: 30.8.5
+    repository: https://helm.linkerd.io/stable

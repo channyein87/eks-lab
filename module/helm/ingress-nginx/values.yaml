@@ -1,0 +1,13 @@
+nginx:
+  ingress:
+    certARN: arn:aws:acm:XX-XXXX-X:XXXXXXXXX:certificate/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXX
+    host: example.local
+
+ingress-nginx:
+  controller:
+    replicaCount: 1
+    service:
+      enableHttp: true
+      type: ClusterIP
+    admissionWebhooks:
+      enabled: false
