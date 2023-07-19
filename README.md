@@ -13,6 +13,7 @@ Module with base components where nearly production cluster needs.
 - cluster autoscaler
 - nginx ingress
 - hashicorp vault
+- oauth2 proxy
 
 ## Projects
 
