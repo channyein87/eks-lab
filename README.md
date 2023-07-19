@@ -11,9 +11,9 @@ Module with base components where nearly production cluster needs.
 - external dns
 - cert manager
 - cluster autoscaler
-- nginx ingress
 - hashicorp vault
-- oauth2 proxy
+- nginx ingress
+- [oauth2 proxy](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/oauth_provider#github-auth-provider)
 
 ## Projects
 
@@ -37,6 +37,7 @@ E.g.
 
 ```shell
 cd linkerd
+touch terraform.tfvars # update values based on variables.tf
 terraform init
 terraform plan
 terraform apply
