@@ -40,6 +40,6 @@ variable "flux_config" {
   })
   default = {
     repository_full_name = "channyein87/eks-lab"
-    target_path          = "fluxcd/eks-lab"
+    target_path          = "fluxcd/clusters/eks-lab"
   }
 }
