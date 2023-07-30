@@ -11,11 +11,11 @@ resource "time_sleep" "eks" {
   depends_on      = [module.eks]
 }
 
-resource "helm_release" "linkerd_viz" {
+resource "helm_release" "argocd" {
   name              = "argo-cd"
   namespace         = "argocd"
   chart             = "argo-cd"
-  chart_version     = "5.29.1"
+  version           = "5.29.1"
   repository        = "https://argoproj.github.io/argo-helm"
   create_namespace  = true
   atomic            = true
@@ -25,11 +25,14 @@ resource "helm_release" "linkerd_viz" {
   values = [
     <<-EOT
       server:
+        extraArgs:
+        - --insecure
         ingress:
           enabled: true
-          annotations:      
-            nginx.ingress.kubernetes.io/auth-signin: https://auth.${var.route53_domain_name}/oauth2/start?rd=https%3A%2F%2F$host$request_uri
-            nginx.ingress.kubernetes.io/auth-url: https://auth.${var.route53_domain_name}/oauth2/auth
+          ingressClassName: nginx
+          annotations:
+            nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+            nginx.ingress.kubernetes.io/ssl-passthrough: "true"
           hosts: 
             - argocd.${var.route53_domain_name}
     EOT
