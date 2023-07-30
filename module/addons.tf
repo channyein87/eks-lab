@@ -161,7 +161,7 @@ module "vault" {
     }
   }
 
-  values = [
+  values = [ # TODO: use S3 backed storage instead of raft.
     <<-EOT
       vault:
         server:
