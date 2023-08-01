@@ -42,8 +42,9 @@ resource "helm_release" "argocd" {
 }
 
 resource "time_sleep" "argocd" {
-  create_duration = "30s"
-  depends_on      = [helm_release.argocd]
+  create_duration  = "30s"
+  destroy_duration = "30s"
+  depends_on       = [helm_release.argocd]
 }
 
 resource "helm_release" "argo_apps" {

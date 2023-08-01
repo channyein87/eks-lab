@@ -3,5 +3,4 @@ kind: Deployment
 metadata:
   name: ui
 spec:
-  # HIGHLIGHT
-  replicas: 1
+    replicas: 1
