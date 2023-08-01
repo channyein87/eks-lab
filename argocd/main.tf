@@ -40,3 +40,26 @@ resource "helm_release" "argocd" {
 
   depends_on = [time_sleep.eks]
 }
+
+resource "time_sleep" "argocd" {
+  create_duration = "30s"
+  depends_on      = [helm_release.argocd]
+}
+
+resource "helm_release" "argo_apps" {
+  name            = "apps"
+  namespace       = "argocd"
+  chart           = "${path.module}/app-of-apps"
+  atomic          = true
+  cleanup_on_fail = true
+
+  values = [
+    <<-EOT
+      spec:
+        source:
+          repoURL: ${var.argocd_apps_repo}
+    EOT
+  ]
+
+  depends_on = [time_sleep.argocd]
+}

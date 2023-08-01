@@ -20,3 +20,9 @@ variable "route53_domain_name" {
   description = "Route53 zone name for ACM and TLS."
   type        = string
 }
+
+variable "argocd_apps_repo" {
+  description = "ArgoCD App of Apps repo."
+  type        = string
+  default     = "https://github.com/channyein87/eks-lab"
+}
