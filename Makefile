@@ -15,7 +15,7 @@ completion:
 
 .PHONY: kubeconfig
 kubeconfig:
-	aws eks update-kubeconfig --name lab-cluster --alias lab-cluster
+	aws eks update-kubeconfig --name eks-lab --alias eks-lab
 
 .PHONY: help
 help:  ## Display this help menu

@@ -24,6 +24,9 @@ resource "helm_release" "argocd" {
 
   values = [
     <<-EOT
+      config:
+        secret:
+          argocdServerAdminPassword: ${bcrypt(var.argocd_admin_password)}
       server:
         extraArgs:
         - --insecure
@@ -43,24 +46,48 @@ resource "helm_release" "argocd" {
 
 resource "time_sleep" "argocd" {
   create_duration  = "30s"
-  destroy_duration = "30s"
+  destroy_duration = "60s"
   depends_on       = [helm_release.argocd]
+
+  triggers = {
+    "argocd_server"  = "argocd.${var.route53_domain_name}:443"
+    "admin_password" = var.argocd_admin_password
+  }
 }
 
-resource "helm_release" "argo_apps" {
-  name            = "apps"
-  namespace       = "argocd"
-  chart           = "${path.module}/app-of-apps"
-  atomic          = true
-  cleanup_on_fail = true
+resource "argocd_application" "apps" {
+  metadata {
+    name      = "apps"
+    namespace = "argocd"
+  }
 
-  values = [
-    <<-EOT
-      spec:
-        source:
-          repoURL: ${var.argocd_apps_repo}
-    EOT
-  ]
+  spec {
+    destination {
+      server    = "https://kubernetes.default.svc"
+      namespace = "default"
+    }
+
+    source {
+      repo_url        = var.argocd_apps_repo
+      target_revision = "HEAD"
+      ref             = "main"
+      path            = "argocd/app-of-apps"
+
+      helm {
+        parameter {
+          name  = "spec.source.repoURL"
+          value = var.argocd_apps_repo
+        }
+      }
+    }
+
+    sync_policy {
+      automated {
+        self_heal = true
+        prune     = true
+      }
+    }
+  }
 
   depends_on = [time_sleep.argocd]
 }

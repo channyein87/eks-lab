@@ -27,7 +27,11 @@ Service mesh project which is light weight and fast. Sidecar proxy is written in
 
 ### FluxCD
 
-GitOps tool for automating application delivery pipelines.
+GitOps tool for automating application delivery pipelines using FluxCD.
+
+### ArgoCD
+
+GitOps tool for automating application delivery pipelines using ArgoCD.
 
 ## Usage
 

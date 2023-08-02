@@ -21,6 +21,12 @@ variable "route53_domain_name" {
   type        = string
 }
 
+variable "argocd_admin_password" {
+  description = "ArgoCD user admin password."
+  type        = string
+  default     = "admin"
+}
+
 variable "argocd_apps_repo" {
   description = "ArgoCD App of Apps repo."
   type        = string
