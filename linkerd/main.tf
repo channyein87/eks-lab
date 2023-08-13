@@ -68,3 +68,21 @@ resource "helm_release" "linkerd_viz" {
 
   depends_on = [time_sleep.linkerd]
 }
+
+resource "helm_release" "emojivoto" {
+  name             = "emojivoto"
+  namespace        = "emojivoto"
+  chart            = "${path.module}/helm/emojivoto"
+  create_namespace = true
+  atomic           = true
+  cleanup_on_fail  = true
+
+  values = [
+    <<-EOT
+      ingress:
+        host: emojivoto.${var.route53_domain_name}
+    EOT
+  ]
+
+  depends_on = [time_sleep.linkerd, helm_release.linkerd_viz]
+}
