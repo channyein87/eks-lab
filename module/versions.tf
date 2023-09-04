@@ -16,3 +16,11 @@ terraform {
     }
   }
 }
+
+data "aws_route53_zone" "zone" {
+  name = "${var.route53_domain_name}."
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}

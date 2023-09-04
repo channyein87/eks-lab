@@ -16,7 +16,7 @@ module "eks_blueprints_addons" {
   enable_metrics_server               = true
   enable_external_dns                 = true
   enable_cert_manager                 = true
-  external_dns_route53_zone_arns      = [data.aws_route53_zone.contoso.arn]
+  external_dns_route53_zone_arns      = [data.aws_route53_zone.zone.arn]
 
   external_dns = {
     repository    = "https://charts.bitnami.com/bitnami"
@@ -135,6 +135,28 @@ resource "time_sleep" "ingress_nginx" {
   depends_on      = [helm_release.ingress_nginx]
 }
 
+resource "aws_kms_key" "vault_kms" {
+  description             = "EKS lab Vault KMS key"
+  deletion_window_in_days = 7
+}
+
+resource "aws_dynamodb_table" "vault_dynamo" {
+  name         = "eks-lab-vault-table"
+  hash_key     = "Path"
+  range_key    = "Key"
+  billing_mode = "PAY_PER_REQUEST"
+
+  attribute {
+    name = "Path"
+    type = "S"
+  }
+
+  attribute {
+    name = "Key"
+    type = "S"
+  }
+}
+
 module "vault" {
   source = "aws-ia/eks-blueprints-addon/aws"
 
@@ -161,7 +183,7 @@ module "vault" {
     }
   }
 
-  values = [ # TODO: use S3 backed storage instead of raft.
+  values = [
     <<-EOT
       vault:
         server:
@@ -173,6 +195,30 @@ module "vault" {
               nginx.ingress.kubernetes.io/auth-url: https://auth.${var.route53_domain_name}/oauth2/auth
             hosts:
               - host: vault.${var.route53_domain_name}
+          ha:
+            enabled: true
+            replicas: 2
+            config: |
+              ui = true
+
+              listener "tcp" {
+                tls_disable = 1
+                address = "[::]:8200"
+                cluster_address = "[::]:8201"
+              }
+
+              storage "dynamodb" {
+                ha_enabled = "true"
+                region     = "${data.aws_region.current.id}"
+                table      = "${aws_dynamodb_table.vault_dynamo.id}"
+              }
+
+              service_registration "kubernetes" {}
+
+              seal "awskms" {
+                region     = "ap-southeast-2"
+                kms_key_id = "${aws_kms_key.vault_kms.id}"
+              }
     EOT
   ]
 

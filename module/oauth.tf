@@ -1,12 +1,3 @@
-variable "oauth_credentials" {
-  description = "GitHub OAuth application credentials."
-  type = object({
-    organization  = string
-    client_id     = string
-    client_secret = string
-  })
-}
-
 resource "random_password" "cookie_secret" {
   length           = 32
   override_special = "-_"
