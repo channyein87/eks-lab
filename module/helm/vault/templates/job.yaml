@@ -57,4 +57,3 @@ spec:
           fi
 
           kubectl create secret generic vault-init --from-file=vault.init=/tmp/secret_value.txt
-          kubectl exec -t vault-1 -- "/bin/sh" "-c" "vault operator raft join http://vault-0.vault-internal:8200"

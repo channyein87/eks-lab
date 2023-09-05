@@ -37,6 +37,18 @@ module "eks_blueprints_addons" {
     ]
   }
 
+  cluster_autoscaler = {
+    values = [
+      <<-EOT
+        extraArgs:
+          scale-down-enabled: true
+          scale-down-utilization-threshold: 0.8
+          scale-down-delay-after-add: 1m
+          skip-nodes-with-system-pods: false
+      EOT
+    ]
+  }
+
   depends_on = [time_sleep.eks_cluster]
 }
 

@@ -46,7 +46,3 @@ terraform init
 terraform plan
 terraform apply
 ```
-
-## Warning
-
-- Vault is currently setup to use EBS csi for storage and volumes are requirend to cleanup manually after the stack is destroyed.
