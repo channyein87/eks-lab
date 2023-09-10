@@ -49,6 +49,10 @@ module "eks" {
       instance_types = ["t3a.small", "t3.small"]
       capacity_type  = "SPOT"
 
+      iam_role_additional_policies = {
+        AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      }
+
       labels = {
         type     = "small"
         capacity = "spot"
