@@ -40,7 +40,7 @@ jobs:
         run: |
           terraform init \
             -backend-config="bucket=terragrunt-terraform" \
-            -backend-config="lab/${{ inputs.stack }}/terraform.tfstate" \
+            -backend-config="key=lab/${{ inputs.stack }}/terraform.tfstate" \
             -backend-config="region=ap-southeast-2"
 
       - name: Terraform Plan
