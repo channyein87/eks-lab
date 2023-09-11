@@ -37,7 +37,11 @@ jobs:
 
       - name: Terraform Init
         working-directory: ${{ inputs.stack }}
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=terragrunt-terraform" \
+            -backend-config="lab/${{ inputs.stack }}/terraform.tfstate" \
+            -backend-config="region=ap-southeast-2"
 
       - name: Terraform Plan
         working-directory: ${{ inputs.stack }}
