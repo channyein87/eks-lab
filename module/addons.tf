@@ -236,3 +236,73 @@ module "vault" {
 
   depends_on = [time_sleep.ingress_nginx]
 }
+
+resource "helm_release" "prometheus" {
+  name             = "prometheus"
+  namespace        = "monitoring"
+  chart            = "prometheus"
+  repository       = "https://prometheus-community.github.io/helm-charts"
+  atomic           = true
+  cleanup_on_fail  = true
+  create_namespace = true
+
+  values = [
+    <<-EOT
+      server:
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          annotations:
+            nginx.ingress.kubernetes.io/auth-signin: https://auth.${var.route53_domain_name}/oauth2/start?rd=https%3A%2F%2F$host$request_uri
+            nginx.ingress.kubernetes.io/auth-url: https://auth.${var.route53_domain_name}/oauth2/auth
+          hosts:
+            - prometheus.${var.route53_domain_name}
+    EOT
+  ]
+
+  depends_on = [time_sleep.ingress_nginx]
+}
+
+resource "helm_release" "loki" {
+  name             = "loki"
+  namespace        = "monitoring"
+  chart            = "loki-stack"
+  repository       = "https://grafana.github.io/helm-charts"
+  atomic           = true
+  cleanup_on_fail  = true
+  create_namespace = true
+
+  depends_on = [time_sleep.ingress_nginx]
+}
+
+resource "helm_release" "grafana" {
+  name             = "grafana"
+  namespace        = "monitoring"
+  chart            = "grafana"
+  repository       = "https://grafana.github.io/helm-charts"
+  atomic           = true
+  cleanup_on_fail  = true
+  create_namespace = true
+
+  values = [
+    <<-EOT
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        hosts:
+          - grafana.${var.route53_domain_name}
+      datasources:
+        datasources.yaml:
+          apiVersion: 1
+          datasources:
+            - name: Prometheus
+              type: prometheus
+              url: http://prometheus-server
+            - name: Loki
+              type: loki
+              url: http://loki:3100
+    EOT
+  ]
+
+  depends_on = [helm_release.loki, helm_release.prometheus]
+}
