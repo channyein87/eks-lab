@@ -263,6 +263,18 @@ resource "helm_release" "prometheus" {
   depends_on = [time_sleep.ingress_nginx]
 }
 
+resource "helm_release" "loki" {
+  name             = "loki"
+  namespace        = "monitoring"
+  chart            = "loki-stack"
+  repository       = "https://grafana.github.io/helm-charts"
+  atomic           = true
+  cleanup_on_fail  = true
+  create_namespace = true
+
+  depends_on = [time_sleep.ingress_nginx]
+}
+
 resource "helm_release" "grafana" {
   name             = "grafana"
   namespace        = "monitoring"
@@ -279,20 +291,18 @@ resource "helm_release" "grafana" {
         ingressClassName: nginx
         hosts:
           - grafana.${var.route53_domain_name}
+      datasources:
+        datasources.yaml:
+          apiVersion: 1
+          datasources:
+            - name: Prometheus
+              type: prometheus
+              url: http://prometheus-server
+            - name: Loki
+              type: loki
+              url: http://loki:3100
     EOT
   ]
 
-  depends_on = [time_sleep.ingress_nginx]
-}
-
-resource "helm_release" "loki" {
-  name             = "loki"
-  namespace        = "monitoring"
-  chart            = "loki-stack"
-  repository       = "https://grafana.github.io/helm-charts"
-  atomic           = true
-  cleanup_on_fail  = true
-  create_namespace = true
-
-  depends_on = [helm_release.grafana, helm_release.prometheus]
+  depends_on = [helm_release.loki, helm_release.prometheus]
 }
