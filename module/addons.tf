@@ -240,7 +240,7 @@ module "vault" {
 resource "helm_release" "prometheus" {
   name             = "prometheus"
   namespace        = "monitoring"
-  chart            = "prometheus-community/prometheus"
+  chart            = "prometheus"
   repository       = "https://prometheus-community.github.io/helm-charts"
   atomic           = true
   cleanup_on_fail  = true
@@ -265,7 +265,7 @@ resource "helm_release" "prometheus" {
 resource "helm_release" "grafana" {
   name             = "grafana"
   namespace        = "monitoring"
-  chart            = "grafana/grafana"
+  chart            = "grafana"
   repository       = "https://grafana.github.io/helm-charts"
   atomic           = true
   cleanup_on_fail  = true
@@ -287,7 +287,7 @@ resource "helm_release" "grafana" {
 resource "helm_release" "loki" {
   name             = "loki"
   namespace        = "monitoring"
-  chart            = "grafana/loki-stack"
+  chart            = "loki-stack"
   repository       = "https://grafana.github.io/helm-charts"
   atomic           = true
   cleanup_on_fail  = true
