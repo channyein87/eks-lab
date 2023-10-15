@@ -17,6 +17,7 @@ module "eks_blueprints_addons" {
   enable_external_dns                 = true
   enable_cert_manager                 = true
   external_dns_route53_zone_arns      = [data.aws_route53_zone.zone.arn]
+  enable_kube_prometheus_stack        = true
 
   external_dns = {
     repository    = "https://charts.bitnami.com/bitnami"
@@ -47,6 +48,13 @@ module "eks_blueprints_addons" {
           skip-nodes-with-system-pods: false
       EOT
     ]
+  }
+
+  kube_prometheus_stack = {
+    name          = "prometheus"
+    namespace     = "monitoring"
+    chart         = "prometheus-community"
+    chart_version = "25.1.0"
   }
 
   depends_on = [time_sleep.eks_cluster]
