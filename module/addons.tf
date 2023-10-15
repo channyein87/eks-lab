@@ -17,7 +17,6 @@ module "eks_blueprints_addons" {
   enable_external_dns                 = true
   enable_cert_manager                 = true
   external_dns_route53_zone_arns      = [data.aws_route53_zone.zone.arn]
-  enable_kube_prometheus_stack        = true
 
   external_dns = {
     repository    = "https://charts.bitnami.com/bitnami"
@@ -48,13 +47,6 @@ module "eks_blueprints_addons" {
           skip-nodes-with-system-pods: false
       EOT
     ]
-  }
-
-  kube_prometheus_stack = {
-    name          = "prometheus"
-    namespace     = "monitoring"
-    chart         = "prometheus-community/prometheus"
-    chart_version = "25.1.0"
   }
 
   depends_on = [time_sleep.eks_cluster]
@@ -245,6 +237,31 @@ module "vault" {
   depends_on = [time_sleep.ingress_nginx]
 }
 
+resource "helm_release" "prometheus" {
+  name             = "prometheus"
+  namespace        = "monitoring"
+  chart            = "prometheus-community/prometheus"
+  repository       = "https://prometheus-community.github.io/helm-charts"
+  atomic           = true
+  cleanup_on_fail  = true
+  create_namespace = true
+
+  values = [
+    <<-EOT
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          nginx.ingress.kubernetes.io/auth-signin: https://auth.${var.route53_domain_name}/oauth2/start?rd=https%3A%2F%2F$host$request_uri
+          nginx.ingress.kubernetes.io/auth-url: https://auth.${var.route53_domain_name}/oauth2/auth
+        hosts:
+          - prometheus.${var.route53_domain_name}
+    EOT
+  ]
+
+  depends_on = [time_sleep.ingress_nginx]
+}
+
 resource "helm_release" "grafana" {
   name             = "grafana"
   namespace        = "monitoring"
@@ -276,5 +293,5 @@ resource "helm_release" "loki" {
   cleanup_on_fail  = true
   create_namespace = true
 
-  depends_on = [helm_release.grafana]
+  depends_on = [helm_release.grafana, helm_release.prometheus]
 }
