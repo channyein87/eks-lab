@@ -53,7 +53,7 @@ module "eks_blueprints_addons" {
   kube_prometheus_stack = {
     name          = "prometheus"
     namespace     = "monitoring"
-    chart         = "prometheus-community"
+    chart         = "prometheus-community/prometheus"
     chart_version = "25.1.0"
   }
 
