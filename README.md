@@ -14,6 +14,9 @@ Module with base components where nearly production cluster needs.
 - hashicorp vault
 - nginx ingress
 - [oauth2 proxy](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/oauth_provider#github-auth-provider)
+- prometheus
+- grafana
+- loki
 
 ## Projects
 
