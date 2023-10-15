@@ -244,3 +244,37 @@ module "vault" {
 
   depends_on = [time_sleep.ingress_nginx]
 }
+
+resource "helm_release" "grafana" {
+  name             = "grafana"
+  namespace        = "monitoring"
+  chart            = "grafana/grafana"
+  repository       = "https://grafana.github.io/helm-charts"
+  atomic           = true
+  cleanup_on_fail  = true
+  create_namespace = true
+
+  values = [
+    <<-EOT
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        hosts:
+          - grafana.${var.route53_domain_name}
+    EOT
+  ]
+
+  depends_on = [time_sleep.ingress_nginx]
+}
+
+resource "helm_release" "loki" {
+  name             = "loki"
+  namespace        = "monitoring"
+  chart            = "grafana/loki-stack"
+  repository       = "https://grafana.github.io/helm-charts"
+  atomic           = true
+  cleanup_on_fail  = true
+  create_namespace = true
+
+  depends_on = [helm_release.grafana]
+}
