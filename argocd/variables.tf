@@ -32,3 +32,8 @@ variable "argocd_apps_repo" {
   type        = string
   default     = "https://github.com/channyein87/eks-lab"
 }
+
+variable "aws_auth_users" {
+  description = "List of map users to cluster access."
+  type        = list(map(any))
+}

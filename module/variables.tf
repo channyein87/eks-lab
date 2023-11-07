@@ -11,3 +11,8 @@ variable "oauth_credentials" {
     client_secret = string
   })
 }
+
+variable "aws_auth_users" {
+  description = "List of map users to cluster access."
+  type        = list(map(any))
+}

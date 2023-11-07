@@ -9,6 +9,7 @@ module "eks" {
   cluster_encryption_config      = {}
   create_kms_key                 = false
   manage_aws_auth_configmap      = true
+  aws_auth_users                 = var.aws_auth_users
 
   cluster_enabled_log_types              = ["api"]
   create_cloudwatch_log_group            = false
@@ -70,19 +71,6 @@ module "eks" {
       source_cluster_security_group = true
     }
   }
-
-  aws_auth_users = [
-    {
-      userarn  = "arn:aws:iam::487523894433:user/cnnn.izzo"
-      username = "cnnn.izzo"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::487523894433:user/gitlab"
-      username = "gitlab"
-      groups   = ["system:masters"]
-    },
-  ]
 
   # Fargate Profile(s)
   fargate_profiles = {}

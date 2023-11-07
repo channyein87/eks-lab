@@ -43,3 +43,8 @@ variable "flux_config" {
     target_path          = "fluxcd/clusters/eks-lab"
   }
 }
+
+variable "aws_auth_users" {
+  description = "List of map users to cluster access."
+  type        = list(map(any))
+}
