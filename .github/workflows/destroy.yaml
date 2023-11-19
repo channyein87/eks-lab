@@ -55,7 +55,7 @@ jobs:
           cat <<EOF >>terraform.tfvars
           ${{ secrets.TF_VARS }}
           EOF
-          terraform plan -destroy -auto-approve -input=false
+          terraform plan -destroy
 
       - name: Terraform Destroy
         working-directory: ${{ inputs.stack }}
