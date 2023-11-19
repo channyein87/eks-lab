@@ -13,6 +13,11 @@ on:
         - atlantis
         - fluxcd
         - mtls
+      destroy:
+        description: 'Destroy'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   terraform-destroy:
@@ -44,11 +49,15 @@ jobs:
             -backend-config="key=lab/${{ inputs.stack }}/terraform.tfstate" \
             -backend-config="region=ap-southeast-2"
 
-      - name: Terraform Destroy
+      - name: Terraform Plan
         working-directory: ${{ inputs.stack }}
-        if: github.ref_name == 'main'
         run: |
           cat <<EOF >>terraform.tfvars
           ${{ secrets.TF_VARS }}
           EOF
-          terraform destroy -auto-approve -input=false
+          terraform plan -destroy -auto-approve -input=false
+
+      - name: Terraform Destroy
+        working-directory: ${{ inputs.stack }}
+        if: inputs.destroy == true
+        run: terraform destroy -auto-approve -input=false tfplan
