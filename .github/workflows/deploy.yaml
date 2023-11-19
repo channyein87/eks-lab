@@ -47,7 +47,9 @@ jobs:
       - name: Terraform Plan
         working-directory: ${{ inputs.stack }}
         run: |
-          echo "${{ secrets.TF_VARS }}" > terraform.tfvars
+          cat <<EOF >>terraform.tfvars
+          ${{ secrets.TF_VARS }}
+          EOF
           terraform plan -input=false -out=tfplan
 
       - name: Terraform Apply

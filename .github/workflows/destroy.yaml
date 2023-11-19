@@ -43,5 +43,7 @@ jobs:
         working-directory: ${{ inputs.stack }}
         if: github.ref_name == 'main'
         run: |
-          echo "${{ secrets.TF_VARS }}" > terraform.tfvars
+          cat <<EOF >>terraform.tfvars
+          ${{ secrets.TF_VARS }}
+          EOF
           terraform destroy -auto-approve -input=false
