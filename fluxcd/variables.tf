@@ -46,5 +46,5 @@ variable "flux_config" {
 
 variable "aws_auth_users" {
   description = "List of map users to cluster access."
-  type        = list(map(any))
+  type        = list(any)
 }

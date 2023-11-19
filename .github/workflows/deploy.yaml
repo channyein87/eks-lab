@@ -39,6 +39,11 @@ jobs:
       - name: Terraform Init
         working-directory: ${{ inputs.stack }}
         run: |
+          cat <<EOF >>backend.tf
+          terraform {
+            backend "s3" {}
+          }
+          EOF
           terraform init \
             -backend-config="bucket=terragrunt-terraform" \
             -backend-config="key=lab/${{ inputs.stack }}/terraform.tfstate" \
