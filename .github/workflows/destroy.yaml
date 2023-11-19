@@ -12,6 +12,7 @@ on:
         - linkerd
         - atlantis
         - fluxcd
+        - mtl
 
 jobs:
   terraform-destroy:

@@ -12,5 +12,6 @@
 			"minikube": "none"
 		},
     "ghcr.io/devcontainers/features/terraform:1": {}
-  }
+  },
+	"mounts": ["source=dind-var-lib-docker,target=/var/lib/docker,type=volume"]
 }

@@ -12,6 +12,7 @@ on:
         - linkerd
         - atlantis
         - fluxcd
+        - mtl
       apply:
         description: 'Apply'
         required: false
