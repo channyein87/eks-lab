@@ -60,4 +60,4 @@ jobs:
       - name: Terraform Destroy
         working-directory: ${{ inputs.stack }}
         if: inputs.destroy == true
-        run: terraform destroy -auto-approve -input=false tfplan
+        run: terraform destroy -auto-approve -input=false
