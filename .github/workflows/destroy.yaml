@@ -12,7 +12,7 @@ on:
         - linkerd
         - atlantis
         - fluxcd
-        - mtls
+        - confluent
       destroy:
         description: 'Destroy'
         required: false

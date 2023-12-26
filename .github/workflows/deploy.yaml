@@ -12,7 +12,7 @@ on:
         - linkerd
         - atlantis
         - fluxcd
-        - mtls
+        - confluent
       apply:
         description: 'Apply'
         required: false
