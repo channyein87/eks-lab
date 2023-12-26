@@ -45,13 +45,17 @@ module "eks" {
   eks_managed_node_groups = {
     lab-cluster-small-ng = {
       min_size       = 2
-      max_size       = 4
+      max_size       = 5
       desired_size   = 2
       instance_types = ["t3a.small", "t3.small"]
       capacity_type  = "SPOT"
 
       iam_role_additional_policies = {
         AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      }
+
+      update_config = {
+        max_unavailable = 2
       }
 
       labels = {
