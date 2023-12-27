@@ -43,11 +43,11 @@ module "eks" {
   subnet_ids = var.network.private_subnet_ids
 
   eks_managed_node_groups = {
-    lab-cluster-small-ng = {
+    lab-cluster-ng = {
       min_size       = 2
       max_size       = 5
       desired_size   = 2
-      instance_types = ["t3a.small", "t3.small"]
+      instance_types = ["t3a.${var.nodes_size}", "t3.${var.nodes_size}"]
       capacity_type  = "SPOT"
 
       iam_role_additional_policies = {
@@ -59,7 +59,7 @@ module "eks" {
       }
 
       labels = {
-        type     = "small"
+        type     = "${var.nodes_size}"
         capacity = "spot"
       }
     }

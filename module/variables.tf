@@ -16,3 +16,9 @@ variable "aws_auth_users" {
   description = "List of map users to cluster access."
   type        = list(any)
 }
+
+variable "nodes_size" {
+  description = "T shirt size for nodes."
+  type        = string
+  default     = "small"
+}

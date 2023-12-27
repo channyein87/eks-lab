@@ -5,6 +5,7 @@ module "eks" {
   network             = var.network
   route53_domain_name = var.route53_domain_name
   aws_auth_users      = var.aws_auth_users
+  nodes_size          = "large"
 }
 
 resource "time_sleep" "eks" {
