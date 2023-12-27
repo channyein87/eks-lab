@@ -27,11 +27,11 @@ module "eks_blueprints_addons" {
           region: ap-southeast-2
           zoneType: public
         labelFilter: "ingress in (externaldns)"
-        namespace: ingress-nginx
         policy: sync
         forceTxtOwnerId: true
         sources:
           - ingress
+          - service
         txtOwnerId: lab-cluster
       EOT
     ]
