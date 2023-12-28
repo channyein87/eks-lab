@@ -5,7 +5,7 @@ nginx:
 
 ingress-nginx:
   controller:
-    replicaCount: 1
+    replicaCount: 2
     service:
       enableHttp: true
       type: ClusterIP

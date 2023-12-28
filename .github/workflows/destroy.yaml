@@ -12,6 +12,12 @@ on:
         - linkerd
         - atlantis
         - fluxcd
+        - confluent
+      destroy:
+        description: 'Destroy'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   terraform-destroy:
@@ -33,14 +39,25 @@ jobs:
       - name: Terraform Init
         working-directory: ${{ inputs.stack }}
         run: |
+          cat <<EOF >>backend.tf
+          terraform {
+            backend "s3" {}
+          }
+          EOF
           terraform init \
             -backend-config="bucket=terragrunt-terraform" \
             -backend-config="key=lab/${{ inputs.stack }}/terraform.tfstate" \
             -backend-config="region=ap-southeast-2"
 
+      - name: Terraform Plan
+        working-directory: ${{ inputs.stack }}
+        run: |
+          cat <<EOF >>terraform.tfvars
+          ${{ secrets.TF_VARS }}
+          EOF
+          terraform plan -destroy
+
       - name: Terraform Destroy
         working-directory: ${{ inputs.stack }}
-        if: github.ref_name == 'main'
-        run: |
-          echo "${{ secrets.TF_VARS }}" > terraform.tfvars
-          terraform destroy -auto-approve -input=false
+        if: inputs.destroy == true
+        run: terraform destroy -auto-approve -input=false

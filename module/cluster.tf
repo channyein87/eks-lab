@@ -3,7 +3,7 @@ module "eks" {
   version = "~> 19.0"
 
   cluster_name    = "eks-lab"
-  cluster_version = "1.25"
+  cluster_version = "1.27"
 
   cluster_endpoint_public_access = true
   cluster_encryption_config      = {}
@@ -25,13 +25,13 @@ module "eks" {
     vpc-cni = {
       before_compute = true
       most_recent    = true
-      configuration_values = jsonencode({
+      configuration_values = var.nodes_size != "large" ? jsonencode({
         env = {
           # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
           ENABLE_PREFIX_DELEGATION = "true"
           WARM_PREFIX_TARGET       = "1"
         }
-      })
+      }) : null
     }
     aws-ebs-csi-driver = {
       most_recent              = true
@@ -43,19 +43,23 @@ module "eks" {
   subnet_ids = var.network.private_subnet_ids
 
   eks_managed_node_groups = {
-    lab-cluster-small-ng = {
+    lab-cluster-ng = {
       min_size       = 2
-      max_size       = 4
+      max_size       = 5
       desired_size   = 2
-      instance_types = ["t3a.small", "t3.small"]
+      instance_types = ["t3a.${var.nodes_size}", "t3.${var.nodes_size}"]
       capacity_type  = "SPOT"
 
       iam_role_additional_policies = {
         AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
       }
 
+      update_config = {
+        max_unavailable = 2
+      }
+
       labels = {
-        type     = "small"
+        type     = "${var.nodes_size}"
         capacity = "spot"
       }
     }

@@ -1,8 +1,4 @@
 terraform {
-  backend "s3" {}
-}
-
-terraform {
   required_providers {
     github = {
       source  = "integrations/github"

@@ -1,0 +1,41 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: controlcenter
+  namespace: confluent
+  annotations:
+    nginx.ingress.kubernetes.io/auth-signin: https://auth.{{ .Values.domain }}/oauth2/start?rd=https%3A%2F%2F$host$request_uri
+    nginx.ingress.kubernetes.io/auth-url: https://auth.{{ .Values.domain }}/oauth2/auth
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: confluent.{{ .Values.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: controlcenter-0-internal
+            port:
+              number: 9021
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: schemaregistry
+  namespace: confluent
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: schemaregistry.{{ .Values.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: schemaregistry
+            port:
+              number: 8081

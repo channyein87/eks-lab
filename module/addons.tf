@@ -27,11 +27,11 @@ module "eks_blueprints_addons" {
           region: ap-southeast-2
           zoneType: public
         labelFilter: "ingress in (externaldns)"
-        namespace: ingress-nginx
         policy: sync
         forceTxtOwnerId: true
         sources:
           - ingress
+          - service
         txtOwnerId: lab-cluster
       EOT
     ]
@@ -53,7 +53,7 @@ module "eks_blueprints_addons" {
 }
 
 resource "aws_iam_role" "ebs_addon" {
-  name = "ebs-addon-role"
+  name_prefix = "ebs-addon-role-"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
