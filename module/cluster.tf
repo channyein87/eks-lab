@@ -25,7 +25,7 @@ module "eks" {
     vpc-cni = {
       before_compute = true
       most_recent    = true
-      configuration_values = var.nodes_size == "large" ? jsonencode({
+      configuration_values = var.nodes_size != "large" ? jsonencode({
         env = {
           # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
           ENABLE_PREFIX_DELEGATION = "true"
