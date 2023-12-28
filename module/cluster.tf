@@ -44,9 +44,9 @@ module "eks" {
 
   eks_managed_node_groups = {
     lab-cluster-ng = {
-      min_size       = 2
+      min_size       = var.node_desired_count
+      desired_size   = var.node_desired_count
       max_size       = 5
-      desired_size   = 2
       instance_types = ["t3a.${var.nodes_size}", "t3.${var.nodes_size}"]
       capacity_type  = "SPOT"
 

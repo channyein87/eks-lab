@@ -22,3 +22,9 @@ variable "nodes_size" {
   type        = string
   default     = "small"
 }
+
+variable "node_desired_count" {
+  description = "Desired size of node group."
+  type        = number
+  default     = 2
+}
