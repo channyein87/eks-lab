@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: 2.7.2
+name: confluent-platform
+version: 1.0.0
+description: Chart installs confluent platform on Kubernetes

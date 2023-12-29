@@ -1,14 +1,12 @@
 apiVersion: platform.confluent.io/v1beta1
-kind: KsqlDB
+kind: Connect
 metadata:
-  name: ksqldb
-  namespace: confluent
+  name: connect
 spec:
-  replicas: 2
+  replicas: 1
   image:
-    application: confluentinc/cp-ksqldb-server:7.5.0
+    application: confluentinc/cp-server-connect:7.5.0
     init: confluentinc/confluent-init-container:2.7.0
-  dataVolumeCapacity: 10Gi
   dependencies:
     kafka:
       bootstrapEndpoint: kafka:9071

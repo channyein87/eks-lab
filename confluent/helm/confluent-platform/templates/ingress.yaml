@@ -3,7 +3,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: controlcenter
-  namespace: confluent
   annotations:
     nginx.ingress.kubernetes.io/auth-signin: https://auth.{{ .Values.domain }}/oauth2/start?rd=https%3A%2F%2F$host$request_uri
     nginx.ingress.kubernetes.io/auth-url: https://auth.{{ .Values.domain }}/oauth2/auth
@@ -25,7 +24,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: schemaregistry
-  namespace: confluent
 spec:
   ingressClassName: nginx
   rules:
@@ -39,3 +37,39 @@ spec:
             name: schemaregistry
             port:
               number: 8081
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kafkarestproxy
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kafkarestproxy.{{ .Values.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kafkarestproxy
+            port:
+              number: 8082
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kafka
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kafka.{{ .Values.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kafka
+            port:
+              number: 8090

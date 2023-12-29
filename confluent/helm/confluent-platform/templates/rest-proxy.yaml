@@ -2,7 +2,6 @@ apiVersion: platform.confluent.io/v1beta1
 kind: KafkaRestProxy
 metadata:
   name: kafkarestproxy
-  namespace: confluent
 spec:
   dependencies:
     kafka:

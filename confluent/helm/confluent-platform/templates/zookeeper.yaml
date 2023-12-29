@@ -2,7 +2,6 @@ apiVersion: platform.confluent.io/v1beta1
 kind: Zookeeper
 metadata:
   name: zookeeper
-  namespace: confluent
 spec:
   replicas: 3
   image:
