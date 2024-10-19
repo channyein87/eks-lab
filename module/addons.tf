@@ -16,7 +16,7 @@ module "eks_blueprints_addons" {
   enable_metrics_server               = true
   enable_external_dns                 = true
   enable_cert_manager                 = true
-  external_dns_route53_zone_arns      = [data.aws_route53_zone.zone.arn]
+  external_dns_route53_zone_arns      = [aws_route53_zone.zone.arn]
 
   external_dns = {
     repository    = "https://charts.bitnami.com/bitnami"
