@@ -1,5 +1,5 @@
 resource "aws_acm_certificate" "acm_cert" {
-  domain_name       = "*.${var.route53_domain_name}"
+  domain_name       = "*.${aws_route53_zone.zone.name}"
   validation_method = "DNS"
 }
 
@@ -17,7 +17,7 @@ resource "aws_route53_record" "acm_cert" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.zone.zone_id
+  zone_id         = aws_route53_zone.zone.id
 }
 
 resource "aws_acm_certificate_validation" "acm_cert" {

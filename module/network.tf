@@ -28,3 +28,7 @@ resource "aws_ec2_tag" "vpc" {
   key         = "kubernetes.io/cluster/lab-cluster"
   value       = "shared"
 }
+
+resource "aws_route53_zone" "zone" {
+  name = var.route53_domain_name
+}
