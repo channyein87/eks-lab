@@ -32,3 +32,12 @@ resource "aws_ec2_tag" "vpc" {
 resource "aws_route53_zone" "zone" {
   name = var.route53_domain_name
 }
+
+resource "cloudflare_dns_record" "name_servers" {
+  for_each = aws_route53_zone.zone.name_servers
+
+  zone_id = data.cloudflare_zone.zone.id
+  name    = local.host
+  value   = each.value
+  type    = "NS"
+}

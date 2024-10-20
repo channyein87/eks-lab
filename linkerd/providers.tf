@@ -34,3 +34,5 @@ provider "helm" {
     }
   }
 }
+
+provider "cloudflare" {}
