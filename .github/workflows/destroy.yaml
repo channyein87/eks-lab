@@ -19,6 +19,9 @@ on:
         default: true
         type: boolean
 
+env:
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
 jobs:
   terraform-destroy:
     runs-on: ubuntu-latest
