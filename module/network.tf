@@ -33,11 +33,11 @@ resource "aws_route53_zone" "zone" {
   name = var.route53_domain_name
 }
 
-resource "cloudflare_dns_record" "name_servers" {
-  for_each = aws_route53_zone.zone.name_servers
+resource "cloudflare_record" "name_servers" {
+  for_each = toset(aws_route53_zone.zone.name_servers)
 
   zone_id = data.cloudflare_zone.zone.id
   name    = local.host
-  value   = each.value
+  content = each.value
   type    = "NS"
 }

@@ -1,6 +1,6 @@
 locals {
-  host   = split(".", route53_domain_name)[0]
-  domain = replace(route53_domain_name, "/^[^.]*\\./", "")
+  host   = split(".", var.route53_domain_name)[0]
+  domain = replace(var.route53_domain_name, "/^[^.]*\\./", "")
 }
 
 data "aws_caller_identity" "current" {}
