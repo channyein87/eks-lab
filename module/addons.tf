@@ -257,6 +257,8 @@ resource "helm_release" "prometheus" {
             nginx.ingress.kubernetes.io/auth-url: https://auth.${var.route53_domain_name}/oauth2/auth
           hosts:
             - prometheus.${var.route53_domain_name}
+        persistentVolume:
+          storageClass: gp2
         nodeSelector:
           topology.kubernetes.io/zone: ${data.aws_availability_zones.zones.names[0]}
     EOT
