@@ -34,7 +34,7 @@ resource "aws_route53_zone" "zone" {
 }
 
 resource "cloudflare_record" "name_servers" {
-  for_each = toset(aws_route53_zone.zone.name_servers)
+  for_each = local.name_servers
 
   zone_id = data.cloudflare_zone.zone.id
   name    = local.host
