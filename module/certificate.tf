@@ -1,6 +1,8 @@
 resource "aws_acm_certificate" "acm_cert" {
   domain_name       = "*.${aws_route53_zone.zone.name}"
   validation_method = "DNS"
+
+  depends_on = [cloudflare_record.name_servers]
 }
 
 resource "aws_route53_record" "acm_cert" {
