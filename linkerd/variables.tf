@@ -20,8 +20,3 @@ variable "route53_domain_name" {
   description = "Route53 zone name for ACM and TLS."
   type        = string
 }
-
-variable "aws_auth_users" {
-  description = "List of map users to cluster access."
-  type        = list(any)
-}

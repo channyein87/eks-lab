@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 11
+appVersion: "11"
 name: emojivoto
 version: 1.0.0
 description: Example application to help demonstrate the Linkerd service mesh

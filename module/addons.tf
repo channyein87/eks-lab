@@ -40,6 +40,8 @@ module "eks_blueprints_addons" {
   cluster_autoscaler = {
     values = [
       <<-EOT
+        autoDiscovery:
+          clusterName: eks-lab
         extraArgs:
           scale-down-enabled: true
           scale-down-utilization-threshold: 0.8
@@ -74,6 +76,26 @@ resource "aws_iam_role" "ebs_addon" {
       },
     ]
   })
+}
+
+resource "kubernetes_storage_class_v1" "gp3" {
+  metadata {
+    name = "gp3"
+
+    annotations = {
+      "storageclass.kubernetes.io/is-default-class" : "true"
+    }
+  }
+
+  storage_provisioner = "ebs.csi.eks.amazonaws.com"
+  volume_binding_mode = "WaitForFirstConsumer"
+
+  parameters = {
+    "type"      = "gp3"
+    "encrypted" = "true"
+  }
+
+  depends_on = [module.eks]
 }
 
 resource "aws_iam_policy_attachment" "ebs_addon" {
@@ -261,6 +283,10 @@ resource "helm_release" "prometheus" {
           storageClass: gp2
         nodeSelector:
           topology.kubernetes.io/zone: ${data.aws_availability_zones.zones.names[0]}
+      alertmanager:
+        enabled: false
+      prometheus-pushgateway:
+        enabled: false
     EOT
   ]
 

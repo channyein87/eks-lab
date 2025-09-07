@@ -1,21 +1,13 @@
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  source = "terraform-aws-modules/eks/aws"
 
-  cluster_name    = "eks-lab"
-  cluster_version = "1.30"
-
-  cluster_endpoint_public_access = true
-  cluster_encryption_config      = {}
-  create_kms_key                 = false
-  manage_aws_auth_configmap      = true
-  aws_auth_users                 = var.aws_auth_users
-
-  cluster_enabled_log_types              = ["api"]
+  name                                   = "eks-lab"
+  kubernetes_version                     = "1.33"
+  enabled_log_types                      = ["api"]
   create_cloudwatch_log_group            = false
   cloudwatch_log_group_retention_in_days = 1
 
-  cluster_addons = {
+  addons = {
     coredns = {
       most_recent = true
     }

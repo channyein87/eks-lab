@@ -38,6 +38,7 @@ terraform.rc
 *.tgz
 .DS_Store
 **/manifests
+local.values.yaml
 
 # IDEA
 .idea
