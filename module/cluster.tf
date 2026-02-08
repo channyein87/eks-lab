@@ -3,9 +3,12 @@ module "eks" {
 
   name                                   = "eks-lab"
   kubernetes_version                     = "1.33"
+  endpoint_public_access                 = true
   enabled_log_types                      = ["api"]
   create_cloudwatch_log_group            = false
   cloudwatch_log_group_retention_in_days = 1
+  
+  enable_cluster_creator_admin_permissions = true
 
   addons = {
     coredns = {
