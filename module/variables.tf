@@ -23,3 +23,9 @@ variable "node_desired_count" {
   type        = number
   default     = 2
 }
+
+variable "additional_cluster_admin_arn" {
+  description = "Principal ARN for additional cluster admin access."
+  type        = string
+  default     = null
+}
