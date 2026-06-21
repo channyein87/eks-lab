@@ -4,7 +4,8 @@ resource "time_sleep" "eks_cluster" {
 }
 
 module "eks_blueprints_addons" {
-  source = "aws-ia/eks-blueprints-addons/aws"
+  source  = "aws-ia/eks-blueprints-addons/aws"
+  version = "~> 1.23"
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -19,20 +20,20 @@ module "eks_blueprints_addons" {
   external_dns_route53_zone_arns      = [aws_route53_zone.zone.arn]
 
   external_dns = {
-    repository    = "https://charts.bitnami.com/bitnami"
-    chart_version = "6.20.4"
+    chart_version = "1.21.1"
     values = [
       <<-EOT
-        aws:
-          region: ap-southeast-2
-          zoneType: public
-        labelFilter: "ingress in (externaldns)"
+        provider:
+          name: aws
+        extraArgs:
+          - --aws-zone-type=public
+          - --aws-region=ap-southeast-2
         policy: sync
-        forceTxtOwnerId: true
+        txtOwnerId: lab-cluster
         sources:
           - ingress
           - service
-        txtOwnerId: lab-cluster
+        labelFilter: "ingress in (externaldns)"
       EOT
     ]
   }
