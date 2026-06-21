@@ -20,3 +20,9 @@ variable "route53_domain_name" {
   description = "Route53 zone name for ACM and TLS."
   type        = string
 }
+
+variable "additional_cluster_admin_arn" {
+  description = "Principal ARN for additional cluster admin access."
+  type        = string
+  default     = null
+}

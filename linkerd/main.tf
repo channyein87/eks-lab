@@ -1,9 +1,10 @@
 module "eks" {
   source = "../module"
 
-  oauth_credentials   = var.oauth_credentials
-  network             = var.network
-  route53_domain_name = var.route53_domain_name
+  oauth_credentials            = var.oauth_credentials
+  network                      = var.network
+  route53_domain_name          = var.route53_domain_name
+  additional_cluster_admin_arn = var.additional_cluster_admin_arn
 }
 
 resource "time_sleep" "eks" {
