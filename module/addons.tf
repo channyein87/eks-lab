@@ -22,11 +22,11 @@ module "eks_blueprints_addons" {
       }
     ]
   }
-  enable_cluster_autoscaler           = true
-  enable_metrics_server               = true
-  enable_external_dns                 = true
-  enable_cert_manager                 = true
-  external_dns_route53_zone_arns      = [aws_route53_zone.zone.arn]
+  enable_cluster_autoscaler      = true
+  enable_metrics_server          = true
+  enable_external_dns            = true
+  enable_cert_manager            = true
+  external_dns_route53_zone_arns = [aws_route53_zone.zone.arn]
 
   external_dns = {
     chart_version = "1.21.1"
@@ -36,7 +36,6 @@ module "eks_blueprints_addons" {
           name: aws
         extraArgs:
           - --aws-zone-type=public
-          - --aws-region=ap-southeast-2
         policy: sync
         txtOwnerId: lab-cluster
         sources:
